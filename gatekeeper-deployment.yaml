@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gatekeeper
+  labels:
+    app: gatekeeper
+spec:
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: gatekeeper
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gatekeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gatekeeper
+  template:
+    metadata:
+      labels:
+        app: gatekeeper
+    spec:
+      volumes:
+      - name : gatekeeper-config
+        configMap:
+          name: gatekeeper-config
+      containers:
+      - name: gatekeeper
+        image: keycloak/keycloak-gatekeeper:7.0.0
+        args:
+        - --config=/etc/config/keycloak-gatekeeper.conf
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: gatekeeper-config
+          mountPath: /etc/config/keycloak-gatekeeper.conf
+          subPath: keycloak-gatekeeper.conf
+          readOnly: true

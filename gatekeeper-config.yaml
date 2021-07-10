@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gatekeeper-config
+data:
+  keycloak-gatekeeper.conf: |+
+    discovery-url: http://34.134.13.9:8080/auth/realms/justice-league
+    skip-openid-provider-tls-verify: true
+    client-id: service-gatekeeper
+    client-secret: 70dbd91f-ef8c-497f-95aa-ed5e08093f84
+    listen: :3000
+    enable-refresh-tokens: true
+    secure-cookie: false
+    enable-logging: true
+    enable-default-deny: true
+    enable-session-cookies: true
+    no-redirects: false
+    ingress.enabled: true
+    debug: false
+    encryption-key: AgXa7xRcoClDEU0ZDSH4X0XhL5Qy2Z2j
+    upstream-url: http://10.3.251.23
+    resources:
+    - uri: /*
+      methods:
+      - POST
+      roles:
+      - service-gatekeeper:edit
+      require-any-role: true
+    - uri: /*
+      methods:
+      - GET
+      roles:
+      - service-gatekeeper:view
+      require-any-role: true
